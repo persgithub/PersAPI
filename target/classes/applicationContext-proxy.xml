@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd         
+								http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd         
+								http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+								http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+								http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">     
+
+	<!-- Define all the JNDI lookup beans -->
+	<!-- Note: The following JNDI Environment variables must be defined in your Server, otherwise no JNDI value missing exception will be raised and the application does not start/work. -->
+	
+	<jee:jndi-lookup id="iapRestURL" jndi-name="java:/comp/env/IAPAdminRESTURL" />
+	<jee:jndi-lookup id="claretyRestURL" jndi-name="java:/comp/env/ClaretyRESTURL" />
+	
+	<!-- End JNDI lookup bean definition -->	
+	
+	<!-- Definition for RestTempaltes for IAPAdmin and JClarety and also hooking up Message Converters-->
+
+	<bean id="iapRestTemplate" class="org.springframework.web.client.RestTemplate">
+		<property name="messageConverters">
+			<util:list>
+				<bean id="marshallingHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+					<property name="marshaller" ref="iapJaxbMarshaller" />				
+					<property name="unmarshaller" ref="iapJaxbMarshaller" />
+				</bean>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.FormHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+			</util:list>
+		</property>
+	</bean>
+	
+	<bean id="iapJaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller" >
+		<property name="packagesToScan" value="us.or.state.pers.iap.api.rest.params,us.or.state.pers.iap.api.rest.disb.beans,us.or.state.pers.iap.api.rest.person.beans
+										       ,us.or.state.pers.api.rest.common.beans" />
+	</bean>
+	
+		<bean id="claretyRestTemplate" class="org.springframework.web.client.RestTemplate">
+		<property name="messageConverters">
+			<util:list>
+				<bean id="marshallingHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+					<property name="marshaller" ref="claretyJaxbMarshaller" />				
+					<property name="unmarshaller" ref="claretyJaxbMarshaller" />
+				</bean>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.FormHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+	            <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+			</util:list>
+		</property>
+	</bean>
+	
+	<bean id="claretyJaxbMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller" >
+		<property name="packagesToScan" value="us.or.state.pers.clarety.api.rest.person.beans,us.or.state.pers.clarety.api.rest.params,us.or.state.pers.api.rest.common.beans" />
+	</bean>
+	
+	<!-- End of Definition -->
+	
+	<!-- Definition for IAP Admin Rest Proxy Bean -->
+
+	<bean id="iapAdminRestProxy" class="us.or.state.pers.iap.api.rest.service.proxy.IAPAdminRestProxy" >
+		<property name="restTemplate" ref="iapRestTemplate" />
+		<property name="restURL" ref="iapRestURL" />
+	</bean>
+
+	<!-- End  Definition -->
+	
+	<!-- Definition for Clarety Rest Proxy Bean -->
+
+	<bean id="claretyRestProxy" class="us.or.state.pers.clarety.api.rest.service.proxy.ClaretyRestProxy" >
+		<property name="restTemplate" ref="claretyRestTemplate" />
+		<property name="restURL" ref="claretyRestURL" />
+	</bean>
+
+	<!-- End Definition -->
+	
+	
+
+</beans>

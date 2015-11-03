@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo message="Plugin invoked for copying....."/>
+  <copy todir="../IAPAdminWeb/WebContent/WEB-INF/lib/" file="target/pers-api-1.0.jar" overwrite="true"/>
+</target>
+</project>
